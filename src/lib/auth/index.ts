@@ -19,6 +19,10 @@ const credentialsSchema = z.object({
 
 class RateLimitError extends Error {
   code = "RATE_LIMITED";
+  constructor(message: string) {
+    super(message);
+    this.name = "RateLimitError";
+  }
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
