@@ -1,0 +1,43 @@
+# Déploiement de production (exemple).
+#   1. Créez un fichier .env.prod (voir docs/DEPLOYMENT.md)
+#   2. docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-workflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?requis}
+      POSTGRES_DB: ${POSTGRES_DB:-workflow}
+    volumes:
+      - workflow-prod-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-workflow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-workflow}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-workflow}?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:?requis}
+      AUTH_URL: ${AUTH_URL:?requis}
+      AUTH_TRUST_HOST: "true"
+      NEXT_PUBLIC_APP_URL: ${AUTH_URL}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-WorkFlow <no-reply@workflow.local>}
+      CRON_SECRET: ${CRON_SECRET:-}
+    ports:
+      - "${APP_PORT:-3002}:3002"
+    volumes:
+      - workflow-uploads:/app/uploads
+
+volumes:
+  workflow-prod-data:
+  workflow-uploads:

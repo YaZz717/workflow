@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Sortie autonome pour l'image Docker de production (voir Dockerfile).
+  output: "standalone",
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "i.pravatar.cc" },
