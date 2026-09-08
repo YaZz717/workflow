@@ -45,6 +45,16 @@ export const ORG_ROLE_LABEL: Record<OrgRole, string> = {
   GUEST: "Invité",
 };
 
+export const CALENDAR_EVENT: Record<
+  "MEETING" | "DEADLINE" | "EVENT" | "REMINDER",
+  { label: string; color: string }
+> = {
+  MEETING: { label: "Réunion", color: "#6366f1" },
+  DEADLINE: { label: "Échéance", color: "#ef4444" },
+  EVENT: { label: "Événement", color: "#14b8a6" },
+  REMINDER: { label: "Rappel", color: "#f59e0b" },
+};
+
 export const NOTIFICATION_LABEL: Record<NotificationType, string> = {
   TASK_ASSIGNED: "Tâche assignée",
   TASK_COMMENTED: "Nouveau commentaire",
