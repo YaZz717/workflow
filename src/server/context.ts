@@ -136,6 +136,32 @@ export const requireTaskAccess = cache(async (taskId: string) => {
   return { ...access, task };
 });
 
+/**
+ * Vérifie l'accès à un document : membre de l'organisation, et si le document
+ * est rattaché à un projet, accès à ce projet. Renvoie le document + rôles.
+ */
+export const requireDocumentAccess = cache(async (documentId: string) => {
+  const doc = await prisma.document.findUnique({
+    where: { id: documentId },
+    select: {
+      id: true,
+      organizationId: true,
+      projectId: true,
+      folderId: true,
+      authorId: true,
+      title: true,
+    },
+  });
+  if (!doc) throw Errors.notFound("Document introuvable");
+
+  if (doc.projectId) {
+    const access = await requireProjectAccess(doc.projectId);
+    return { doc, orgRole: access.orgRole, projectRole: access.projectRole, user: access.user };
+  }
+  const ctx = await requireOrgMember(doc.organizationId);
+  return { doc, orgRole: ctx.role, projectRole: null as null, user: ctx.user };
+});
+
 /** IP du client (best-effort, derrière proxy). */
 export async function getClientIp(): Promise<string> {
   const h = await headers();
