@@ -1,7 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -30,11 +31,22 @@ async function fetchNotifications(): Promise<{ items: NotificationItem[]; unread
 }
 
 export function NotificationsBell() {
+  const qc = useQueryClient();
   const { data } = useQuery({
     queryKey: ["notifications", "preview"],
     queryFn: fetchNotifications,
-    refetchInterval: 60_000,
+    refetchInterval: 90_000, // filet de sécurité ; le SSE fait la mise à jour temps réel
   });
+
+  // Flux temps réel (Server-Sent Events) : recharge la liste quand le compteur change.
+  React.useEffect(() => {
+    const source = new EventSource("/api/notifications/stream");
+    source.addEventListener("unread", () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+    });
+    source.onerror = () => source.close();
+    return () => source.close();
+  }, [qc]);
 
   const unread = data?.unread ?? 0;
 
