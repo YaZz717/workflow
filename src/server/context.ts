@@ -122,6 +122,20 @@ export const requireProjectAccess = cache(async (projectId: string) => {
   };
 });
 
+/**
+ * Vérifie l'accès à une tâche via son projet. Renvoie la tâche, son projet
+ * et les rôles effectifs. Lève 404 si la tâche n'existe pas ou est hors périmètre.
+ */
+export const requireTaskAccess = cache(async (taskId: string) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { id: true, projectId: true, number: true, title: true, status: true },
+  });
+  if (!task) throw Errors.notFound("Tâche introuvable");
+  const access = await requireProjectAccess(task.projectId);
+  return { ...access, task };
+});
+
 /** IP du client (best-effort, derrière proxy). */
 export async function getClientIp(): Promise<string> {
   const h = await headers();
