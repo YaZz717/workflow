@@ -77,18 +77,31 @@ Arrête le timer en cours de l'utilisateur, calcule `durationSec`.
 
 ---
 
+## Projets & organisation (Phase 2 — Server Actions)
+
+Les mutations de projets et d'équipe passent par des **Server Actions** typées
+(pas des routes REST), toutes avec contrôle de permissions serveur et audit :
+
+| Action | Fichier | Permission |
+|---|---|---|
+| `createProjectAction` | `app/(app)/projects/actions.ts` | org ≥ MANAGER |
+| `updateProjectAction` | idem | LEAD du projet ou org ≥ MANAGER |
+| `deleteProjectAction` | idem | org ≥ MANAGER |
+| `addProjectMemberAction` / `removeProjectMemberAction` / `updateProjectMemberRoleAction` | idem | LEAD ou org ≥ MANAGER |
+| `inviteMemberAction` / `revokeInvitationAction` | `app/(app)/team/actions.ts` | org ≥ ADMIN |
+| `updateMemberRoleAction` | idem | org = OWNER |
+| `removeMemberAction` | idem | org ≥ ADMIN, cible de rang inférieur |
+| `acceptInvitationAction` / `declineInvitationAction` | `app/invite/[token]/actions.ts` | email de l'invité = email du compte |
+
 ## Routes prévues (phases suivantes)
 
 ```
-GET/POST         /api/projects
-GET/PATCH/DELETE  /api/projects/:id
 GET/POST         /api/projects/:id/tasks
 GET/PATCH/DELETE  /api/tasks/:id
 PATCH            /api/tasks/:id/status        (déplacement Kanban)
 POST             /api/tasks/:id/comments
 POST             /api/tasks/:id/subtasks
 POST             /api/tasks/:id/attachments
-GET/POST         /api/organizations/:id/invitations
 GET/POST         /api/documents
 GET/POST         /api/calendar/events
 GET              /api/stats/time

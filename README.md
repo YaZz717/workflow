@@ -8,9 +8,11 @@ back-office d'administration et journal d'audit.
 > **Phase 1 (livrée)** : fondations, authentification complète, multi-organisations,
 > rôles & permissions serveur, tableau de bord, recherche globale, notifications,
 > back-office admin, journal d'audit, jeu de données de démo, tests, CI.
-> Les modules Projets, Kanban, Temps, Documents et Calendrier ont leur schéma et
-> une partie de leur API en place ; leurs interfaces arrivent dans les phases suivantes
-> (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
+> **Phase 2 (livrée)** : module Projets complet (liste filtrable, CRUD, dashboard
+> par projet, onglets, gestion des membres du projet), invitations d'organisation
+> par email avec page d'acceptation, gestion des rôles d'organisation.
+> Les modules Kanban (édition des tâches), Temps, Documents et Calendrier arrivent
+> dans les phases suivantes (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
 
 ## Stack
 
