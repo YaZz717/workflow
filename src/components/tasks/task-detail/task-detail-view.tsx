@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useTask, usePatchTask } from "./use-task";
+import { TaskTimerButton } from "@/components/time/task-timer-button";
+import { ManualEntryDialog } from "@/components/time/manual-entry-dialog";
 import { TaskSidebar } from "./sidebar";
 import { Subtasks } from "./subtasks";
 import { Comments } from "./comments";
@@ -73,11 +75,24 @@ export function TaskDetailView({
         >
           <ArrowLeft className="size-4" /> Toutes les tâches
         </Link>
-        {canDelete ? (
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmDelete(true)}>
-            <Trash2 className="size-4" /> Supprimer
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {canEdit ? (
+            <>
+              <TaskTimerButton taskId={taskId} projectId={projectId} />
+              <ManualEntryDialog taskId={taskId} projectId={projectId} />
+            </>
+          ) : null}
+          {canDelete ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className="size-4" /> Supprimer
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
