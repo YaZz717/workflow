@@ -141,4 +141,4 @@ organisation en modifiant un identifiant dans l'URL. Détails dans
 
 ## Licence
 
-Projet de démonstration — usage libre.
+[MIT](LICENSE).
