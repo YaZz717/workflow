@@ -74,6 +74,25 @@ export async function changePasswordAction(
   return actionOk(undefined, "Mot de passe modifié.");
 }
 
+export async function updateNotificationPrefsAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireUser();
+  const { CONFIGURABLE_TYPES } = await import("@/lib/notification-prefs");
+
+  const prefs: Record<string, { inApp: boolean }> = {};
+  for (const { type } of CONFIGURABLE_TYPES) {
+    prefs[type] = { inApp: formData.get(`pref_${type}`) === "on" };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { notificationPrefs: prefs },
+  });
+  return actionOk(undefined, "Préférences enregistrées.");
+}
+
 const createOrgSchema = z.object({
   name: z.string().min(2, "Nom trop court").max(80),
   description: z.string().max(280).optional(),

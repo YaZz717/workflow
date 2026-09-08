@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 const tabs = [
   { href: "/settings/profile", label: "Profil" },
   { href: "/settings/security", label: "Sécurité" },
+  { href: "/settings/notifications", label: "Notifications" },
   { href: "/settings/organization", label: "Organisation" },
 ];
 

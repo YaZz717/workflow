@@ -114,6 +114,8 @@ model User {
   locale        String     @default("fr")
   timezone      String     @default("Europe/Paris")
   lastLoginAt   DateTime?
+  /// Préférences de notification : { "<NotificationType>": { "inApp": bool } }
+  notificationPrefs Json?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

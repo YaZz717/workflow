@@ -1,5 +1,6 @@
 import type { NotificationType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isTypeEnabled } from "@/lib/notification-prefs";
 
 type NotifyInput = {
   organizationId: string;
@@ -18,9 +19,19 @@ type NotifyInput = {
  * N'échoue jamais l'action métier appelante.
  */
 export async function notify(input: NotifyInput): Promise<void> {
-  const recipients = [...new Set(input.recipientIds)].filter((id) => id && id !== input.actorId);
-  if (recipients.length === 0) return;
+  const candidates = [...new Set(input.recipientIds)].filter((id) => id && id !== input.actorId);
+  if (candidates.length === 0) return;
   try {
+    // Filtre selon les préférences de notification de chaque destinataire.
+    const users = await prisma.user.findMany({
+      where: { id: { in: candidates } },
+      select: { id: true, notificationPrefs: true },
+    });
+    const recipients = users
+      .filter((u) => isTypeEnabled(u.notificationPrefs, input.type))
+      .map((u) => u.id);
+    if (recipients.length === 0) return;
+
     await prisma.notification.createMany({
       data: recipients.map((recipientId) => ({
         organizationId: input.organizationId,
