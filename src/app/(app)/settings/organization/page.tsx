@@ -4,6 +4,7 @@ import { requireOrgMember } from "@/server/context";
 import { can } from "@/lib/permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ExportMenu } from "@/components/shared/export-menu";
 import { ORG_ROLE_LABEL } from "@/lib/constants";
 
 export default async function OrganizationSettingsPage() {
@@ -60,6 +61,18 @@ export default async function OrganizationSettingsPage() {
             }
           />
           <p className="pt-2 text-xs text-muted-foreground">Abonnement fictif — aucune facturation réelle.</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Export des données</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Téléchargez les projets, tâches et entrées de temps au format CSV.
+          </p>
+          <ExportMenu />
         </CardContent>
       </Card>
     </div>

@@ -6,6 +6,7 @@ import { getActiveOrganization } from "@/server/organizations";
 import { orgRoleAtLeast } from "@/lib/permissions";
 import { PageHeader } from "@/components/layout/page-header";
 import { TimeDashboard } from "@/components/time/time-dashboard";
+import { ExportMenu } from "@/components/shared/export-menu";
 
 export const metadata: Metadata = { title: "Suivi du temps" };
 
@@ -41,7 +42,9 @@ export default async function TimePage() {
       <PageHeader
         title="Suivi du temps"
         description="Chronomètre, saisie manuelle et statistiques."
-      />
+      >
+        <ExportMenu only={["time"]} label="Exporter le temps" />
+      </PageHeader>
       <TimeDashboard
         isManager={isManager}
         projects={projects.map((p) => ({ id: p.id, name: p.name }))}

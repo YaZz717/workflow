@@ -6,6 +6,7 @@ import { getActiveOrganization } from "@/server/organizations";
 import { orgRoleAtLeast } from "@/lib/permissions";
 import { PageHeader } from "@/components/layout/page-header";
 import { MyTasksView } from "@/components/tasks/my-tasks-view";
+import { ExportMenu } from "@/components/shared/export-menu";
 import type { PageParams } from "@/types/page";
 
 export const metadata: Metadata = { title: "Mes tâches" };
@@ -27,7 +28,9 @@ export default async function TasksPage({ searchParams }: PageParams) {
 
   return (
     <div>
-      <PageHeader title="Mes tâches" description="Vos tâches sur l'ensemble des projets." />
+      <PageHeader title="Mes tâches" description="Vos tâches sur l'ensemble des projets.">
+        <ExportMenu only={["tasks"]} />
+      </PageHeader>
       <MyTasksView
         projects={projects}
         initialScope={typeof sp.scope === "string" ? sp.scope : undefined}
