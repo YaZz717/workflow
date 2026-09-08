@@ -17,8 +17,11 @@ back-office d'administration et journal d'audit.
 > **Phase 4 (livrée)** : suivi du temps (chronomètre, saisie manuelle, page de
 > statistiques) et calendrier (vues mois/semaine des échéances et événements),
 > plus un endpoint cron de rappel d'échéance.
-> Les modules Documents et la recherche plein-texte étendue arrivent en Phase 5
-> (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
+> **Phase 5 (livrée)** : documents (navigateur, éditeur Markdown avec aperçu,
+> dossiers, pièces jointes) et recherche plein-texte étendue au contenu des
+> documents et aux commentaires.
+> Reste le peaufinage (temps réel, export…) — voir
+> [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap).
 
 ## Stack
 

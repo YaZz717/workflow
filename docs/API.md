@@ -156,10 +156,28 @@ POST   /api/cron/deadlines    Authorization: Bearer <CRON_SECRET>
        À appeler une fois par jour par un planificateur externe.
 ```
 
+## Documents (Phase 5)
+
+```
+GET    /api/documents?projectId=&folderId=&scope=all|general&q=&archived=1
+       → { documents, folders, projects }
+POST   /api/documents        { title, content?, projectId?, folderId? }
+GET    /api/documents/:id
+PATCH  /api/documents/:id     { title?, content?, folderId?, isArchived? }
+       (archivage : auteur ou manager ; édition du contenu : membre du périmètre)
+DELETE /api/documents/:id     auteur ou manager
+POST   /api/documents/:id/attachments   multipart, champ "file" (≤10 Mo)
+POST   /api/folders          { name, projectId?, parentId? }
+PATCH  /api/folders/:id       { name }
+DELETE /api/folders/:id       (documents détachés, sous-dossiers remontés)
+```
+
+`GET /api/search?q=` couvre désormais aussi le **contenu** des documents et
+le **corps** des commentaires (bornés aux projets visibles), avec un extrait.
+
 ## Routes prévues (phases suivantes)
 
 ```
-GET/POST         /api/documents
-POST             /api/documents/:id/attachments
-GET              /api/search  (extension plein-texte)
+GET   /api/export/...    (export CSV/JSON)
+GET   /api/stream        (notifications temps réel)
 ```
