@@ -1,20 +1,38 @@
 import type { Metadata } from "next";
-import { PhasePlaceholder } from "@/components/layout/phase-placeholder";
+
+import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/server/context";
+import { getActiveOrganization } from "@/server/organizations";
+import { orgRoleAtLeast } from "@/lib/permissions";
+import { PageHeader } from "@/components/layout/page-header";
+import { MyTasksView } from "@/components/tasks/my-tasks-view";
+import type { PageParams } from "@/types/page";
 
 export const metadata: Metadata = { title: "Mes tâches" };
 
-export default function TasksPage() {
+export default async function TasksPage({ searchParams }: PageParams) {
+  const user = await requireUser();
+  const org = await getActiveOrganization();
+  const sp = await searchParams;
+
+  const isManager = orgRoleAtLeast(org.role, "MANAGER");
+  const projects = await prisma.project.findMany({
+    where: {
+      organizationId: org.id,
+      ...(isManager ? {} : { members: { some: { userId: user.id } } }),
+    },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, key: true },
+  });
+
   return (
-    <PhasePlaceholder
-      title="Mes tâches"
-      description="Toutes vos tâches, tous projets confondus."
-      phase="Phase 3"
-      features={[
-        "Vue Kanban avec drag & drop entre colonnes (Backlog → Done)",
-        "Vue liste avec recherche, filtres, tri et pagination",
-        "Sous-tâches, tags, commentaires avec mentions @, pièces jointes",
-        "Historique des modifications par tâche",
-      ]}
-    />
+    <div>
+      <PageHeader title="Mes tâches" description="Vos tâches sur l'ensemble des projets." />
+      <MyTasksView
+        projects={projects}
+        initialScope={typeof sp.scope === "string" ? sp.scope : undefined}
+        initialOverdue={sp.filter === "overdue"}
+      />
+    </div>
   );
 }
