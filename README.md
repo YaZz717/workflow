@@ -14,8 +14,11 @@ back-office d'administration et journal d'audit.
 > **Phase 3 (livrée)** : module Tâches — board Kanban avec glisser-déposer, vue
 > liste filtrable/paginée, édition en ligne, sous-tâches, commentaires avec
 > mentions @, pièces jointes, historique, vue globale « Mes tâches ».
-> Les modules Temps (interface + stats), Documents et Calendrier arrivent dans les
-> phases suivantes (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
+> **Phase 4 (livrée)** : suivi du temps (chronomètre, saisie manuelle, page de
+> statistiques) et calendrier (vues mois/semaine des échéances et événements),
+> plus un endpoint cron de rappel d'échéance.
+> Les modules Documents et la recherche plein-texte étendue arrivent en Phase 5
+> (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
 
 ## Stack
 

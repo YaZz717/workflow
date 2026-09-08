@@ -123,11 +123,43 @@ POST   /api/tags                                     { name, color } — MANAGER
 Toutes les écritures produisent, selon le cas : une entrée `TaskActivity`
 (historique), une entrée `AuditLog`, et des notifications aux personnes concernées.
 
+## Suivi du temps (Phase 4)
+
+```
+GET    /api/time/current                         chrono en cours
+POST   /api/time/start        { taskId }         démarre (arrête l'ancien)
+POST   /api/time/stop                             arrête, calcule la durée
+POST   /api/time/manual       { taskId, date, durationMinutes, description? }
+GET    /api/time/entries?from=&to=&projectId=&userId=&page=
+                                                  liste paginée (non-managers :
+                                                  leurs entrées uniquement)
+PATCH  /api/time/entries/:id  { durationMinutes?, description?, date? }
+DELETE /api/time/entries/:id                       propriétaire ou manager
+GET    /api/time/stats?range=today|week|month&scope=me|team
+```
+
+## Calendrier (Phase 4)
+
+```
+GET    /api/calendar?from=ISO&to=ISO              { events, deadlines }
+POST   /api/calendar/events   { title, type, startAt, endAt, allDay,
+                                location?, projectId?, attendeeIds[] }
+PATCH  /api/calendar/events/:id                    organisateur ou manager
+DELETE /api/calendar/events/:id
+```
+
+## Tâches planifiées (cron)
+
+```
+POST   /api/cron/deadlines    Authorization: Bearer <CRON_SECRET>
+       → crée les notifications TASK_DUE_SOON (échéances < 48h), sans doublon.
+       À appeler une fois par jour par un planificateur externe.
+```
+
 ## Routes prévues (phases suivantes)
 
 ```
 GET/POST         /api/documents
-GET/POST         /api/calendar/events
-POST             /api/time/manual
-GET              /api/stats/time
+POST             /api/documents/:id/attachments
+GET              /api/search  (extension plein-texte)
 ```
