@@ -175,9 +175,15 @@ DELETE /api/folders/:id       (documents détachés, sous-dossiers remontés)
 `GET /api/search?q=` couvre désormais aussi le **contenu** des documents et
 le **corps** des commentaires (bornés aux projets visibles), avec un extrait.
 
-## Routes prévues (phases suivantes)
+## Notifications, temps réel & export (Phase 6)
 
 ```
-GET   /api/export/...    (export CSV/JSON)
-GET   /api/stream        (notifications temps réel)
+GET   /api/notifications/stream           SSE : événement `unread` { count }
+GET   /api/export/projects                CSV (projets visibles)
+GET   /api/export/tasks                   CSV
+GET   /api/export/time[?scope=me]         CSV (équipe si manager, sinon soi)
 ```
+
+Préférences de notification : Server Action `updateNotificationPrefsAction`
+(`app/(app)/settings/actions.ts`). `notify()` ne crée une notification que si
+le type est activé dans `User.notificationPrefs` du destinataire.

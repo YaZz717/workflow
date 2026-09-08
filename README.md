@@ -4,24 +4,11 @@ Plateforme SaaS de gestion de projets et d'équipes : projets, tâches (Kanban),
 sous-tâches, commentaires, suivi du temps, documents, calendrier, notifications,
 back-office d'administration et journal d'audit.
 
-> **État du projet** — développement par phases.
-> **Phase 1 (livrée)** : fondations, authentification complète, multi-organisations,
-> rôles & permissions serveur, tableau de bord, recherche globale, notifications,
-> back-office admin, journal d'audit, jeu de données de démo, tests, CI.
-> **Phase 2 (livrée)** : module Projets complet (liste filtrable, CRUD, dashboard
-> par projet, onglets, gestion des membres du projet), invitations d'organisation
-> par email avec page d'acceptation, gestion des rôles d'organisation.
-> **Phase 3 (livrée)** : module Tâches — board Kanban avec glisser-déposer, vue
-> liste filtrable/paginée, édition en ligne, sous-tâches, commentaires avec
-> mentions @, pièces jointes, historique, vue globale « Mes tâches ».
-> **Phase 4 (livrée)** : suivi du temps (chronomètre, saisie manuelle, page de
-> statistiques) et calendrier (vues mois/semaine des échéances et événements),
-> plus un endpoint cron de rappel d'échéance.
-> **Phase 5 (livrée)** : documents (navigateur, éditeur Markdown avec aperçu,
-> dossiers, pièces jointes) et recherche plein-texte étendue au contenu des
-> documents et aux commentaires.
-> Reste le peaufinage (temps réel, export…) — voir
-> [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap).
+> **Projet complet** — construit en 6 phases (voir l'historique Git et
+> [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)) : fondations & auth,
+> organisations & invitations, projets, tâches / Kanban / commentaires,
+> suivi du temps & calendrier, documents, puis peaufinage (préférences de
+> notification, temps réel SSE, export CSV, image Docker de production).
 
 ## Stack
 
@@ -124,13 +111,25 @@ prisma/            schéma, migrations, seed
 src/
   app/
     (auth)/        inscription, connexion, mots de passe, vérification email
-    (app)/         application (sidebar + topbar) : dashboard, notifications,
-                   équipe, paramètres, admin, + placeholders des modules à venir
-    api/           routes API REST (search, notifications, time, auth)
-  components/      ui/ (primitives), layout/, dashboard/, search/, time/
-  lib/             prisma, auth, permissions, http, audit, validations, email
-  server/          contexte de requête, gardes d'accès, agrégations
+    (app)/         application (sidebar + topbar) : dashboard, projets, tâches,
+                   calendrier, temps, documents, notifications, équipe,
+                   paramètres, admin
+    api/           routes API REST (projets, tâches, temps, calendrier,
+                   documents, recherche, notifications, export, cron)
+    invite/        page publique d'acceptation d'invitation
+  components/      ui/ (primitives), layout/, dashboard/, tasks/, time/,
+                   calendar/, documents/, search/, shared/
+  lib/             prisma, auth, permissions, http, audit, validations,
+                   email, upload, csv, board-order, mentions, notifications
+  server/          contexte de requête + gardes d'accès, et une couche
+                   requêtes/mutations par domaine (projects, tasks, time,
+                   calendar, documents, export, dashboard)
 ```
+
+## Déploiement
+
+Voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — image Docker de production
+(`Dockerfile` + `docker-compose.prod.yml`) et checklist.
 
 ## Sécurité
 
