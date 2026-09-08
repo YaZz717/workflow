@@ -8,6 +8,7 @@ import {
   FolderKanban,
   CheckSquare,
   FileText,
+  MessageSquare,
   User as UserIcon,
   Loader2,
 } from "lucide-react";
@@ -25,7 +26,7 @@ export const useCommandPalette = create<PaletteStore>((set) => ({
 }));
 
 type SearchHit = {
-  type: "project" | "task" | "document" | "member";
+  type: "project" | "task" | "document" | "comment" | "member";
   id: string;
   title: string;
   subtitle?: string;
@@ -36,6 +37,7 @@ const ICONS = {
   project: FolderKanban,
   task: CheckSquare,
   document: FileText,
+  comment: MessageSquare,
   member: UserIcon,
 } as const;
 
@@ -43,6 +45,7 @@ const GROUP_LABEL = {
   project: "Projets",
   task: "Tâches",
   document: "Documents",
+  comment: "Commentaires",
   member: "Membres",
 } as const;
 
