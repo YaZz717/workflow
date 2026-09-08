@@ -93,16 +93,41 @@ Les mutations de projets et d'équipe passent par des **Server Actions** typées
 | `removeMemberAction` | idem | org ≥ ADMIN, cible de rang inférieur |
 | `acceptInvitationAction` / `declineInvitationAction` | `app/invite/[token]/actions.ts` | email de l'invité = email du compte |
 
+## Tâches (Phase 3)
+
+```
+GET    /api/projects/:id/tasks?view=board            colonnes Kanban
+GET    /api/projects/:id/tasks?view=list&q=&status=&priority=&assigneeId=&sort=&page=
+POST   /api/projects/:id/tasks                       créer (MEMBER+ du projet)
+GET    /api/tasks?scope=assigned|created|all&projectId=&status=&overdue=1&sort=&page=
+GET    /api/tasks/:id                                détail
+PATCH  /api/tasks/:id                                { title?, description?, status?,
+                                                       priority?, assigneeIds?, tagIds?,
+                                                       dueDate?, estimateMinutes? }
+DELETE /api/tasks/:id                                créateur, LEAD ou MANAGER+
+PATCH  /api/tasks/:id/move                           { status, beforeId?, afterId? }
+POST   /api/tasks/:id/subtasks                       { title }
+PATCH  /api/subtasks/:id                             { title?, isDone? }
+DELETE /api/subtasks/:id
+GET    /api/tasks/:id/comments
+POST   /api/tasks/:id/comments                       { body, parentId? } — mentions @ auto
+PATCH  /api/comments/:id                             { body } — auteur uniquement
+DELETE /api/comments/:id                             auteur ou modérateur
+POST   /api/tasks/:id/attachments                    multipart, champ "file" (≤10 Mo)
+GET    /api/attachments/:id                          téléchargement (accès contrôlé)
+DELETE /api/attachments/:id                          uploadeur ou manager
+GET    /api/tags
+POST   /api/tags                                     { name, color } — MANAGER+
+```
+
+Toutes les écritures produisent, selon le cas : une entrée `TaskActivity`
+(historique), une entrée `AuditLog`, et des notifications aux personnes concernées.
+
 ## Routes prévues (phases suivantes)
 
 ```
-GET/POST         /api/projects/:id/tasks
-GET/PATCH/DELETE  /api/tasks/:id
-PATCH            /api/tasks/:id/status        (déplacement Kanban)
-POST             /api/tasks/:id/comments
-POST             /api/tasks/:id/subtasks
-POST             /api/tasks/:id/attachments
 GET/POST         /api/documents
 GET/POST         /api/calendar/events
+POST             /api/time/manual
 GET              /api/stats/time
 ```

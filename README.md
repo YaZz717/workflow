@@ -11,8 +11,11 @@ back-office d'administration et journal d'audit.
 > **Phase 2 (livrée)** : module Projets complet (liste filtrable, CRUD, dashboard
 > par projet, onglets, gestion des membres du projet), invitations d'organisation
 > par email avec page d'acceptation, gestion des rôles d'organisation.
-> Les modules Kanban (édition des tâches), Temps, Documents et Calendrier arrivent
-> dans les phases suivantes (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
+> **Phase 3 (livrée)** : module Tâches — board Kanban avec glisser-déposer, vue
+> liste filtrable/paginée, édition en ligne, sous-tâches, commentaires avec
+> mentions @, pièces jointes, historique, vue globale « Mes tâches ».
+> Les modules Temps (interface + stats), Documents et Calendrier arrivent dans les
+> phases suivantes (voir [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#roadmap)).
 
 ## Stack
 

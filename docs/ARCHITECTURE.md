@@ -101,7 +101,7 @@ Voir [API.md](API.md) pour le détail et les codes d'erreur.
 |---|---|
 | **1 — livrée** | Auth complète, organisations, RBAC serveur, dashboard, recherche, notifications, admin, audit, seed, tests, CI |
 | **2 — livrée** | Projets : liste filtrable/triable, création/édition/suppression, dashboard par projet, onglets (tâches, documents, membres, paramètres), gestion des membres du projet et de leurs rôles ; invitations d'organisation par email + page d'acceptation `/invite/[token]` ; gestion des rôles d'organisation et retrait de membres |
-| **3** | Tâches : Kanban drag & drop, vue liste, filtres/tri/pagination, sous-tâches éditables, commentaires + mentions, pièces jointes, historique |
+| **3 — livrée** | Tâches : board Kanban avec glisser-déposer (dnd-kit) entre colonnes + réordonnancement, vue liste filtrable/triable/paginée, création via dialog, édition en ligne (statut, priorité, assignés, tags, échéance, estimation) ; sous-tâches CRUD ; commentaires avec mentions @, édition/suppression, réponses ; pièces jointes (upload validé côté serveur, téléchargement contrôlé) ; historique par tâche ; vue globale « Mes tâches » multi-projets ; notifications (assignation, mention, réponse, commentaire) |
 | **4** | Suivi du temps (UI + stats), calendrier (mois/semaine), notifications d'échéance |
 | **5** | Documents (éditeur, dossiers, upload), recherche plein-texte étendue |
 | **6** | Peaufinage : temps réel (SSE), export, préférences de notification, thème avancé |
