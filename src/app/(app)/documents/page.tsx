@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { PhasePlaceholder } from "@/components/layout/phase-placeholder";
+
+import { requireUser } from "@/server/context";
+import { getActiveOrganization } from "@/server/organizations";
+import { PageHeader } from "@/components/layout/page-header";
+import { DocumentBrowser } from "@/components/documents/document-browser";
 
 export const metadata: Metadata = { title: "Documents" };
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  await requireUser();
+  await getActiveOrganization();
+
   return (
-    <PhasePlaceholder
-      title="Documents"
-      description="Base de connaissances et fichiers par projet."
-      phase="Phase 5"
-      features={[
-        "Création / édition / suppression de documents (contenu riche)",
-        "Dossiers et arborescence",
-        "Upload de fichiers avec limite de taille et vérification du type côté serveur",
-        "Recherche plein-texte",
-      ]}
-    />
+    <div>
+      <PageHeader
+        title="Documents"
+        description="Base de connaissances de l'organisation et des projets."
+      />
+      <DocumentBrowser />
+    </div>
   );
 }
