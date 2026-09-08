@@ -17,6 +17,7 @@ const schema = z.object({
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(10),
   LOGIN_MAX_ATTEMPTS: z.coerce.number().int().positive().default(5),
   LOGIN_WINDOW_MINUTES: z.coerce.number().int().positive().default(15),
+  CRON_SECRET: z.string().optional().default(""),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

@@ -28,7 +28,8 @@ export const authConfig = {
         pathname.startsWith("/forgot-password") ||
         pathname.startsWith("/reset-password") ||
         pathname.startsWith("/verify-email") ||
-        pathname.startsWith("/invite");
+        pathname.startsWith("/invite") ||
+        pathname.startsWith("/api/cron/"); // authentifié par Bearer token
 
       if (isPublic) return true;
       return isLoggedIn;
