@@ -91,7 +91,7 @@ export async function requireOrgCapability(
  * Vérifie l'accès à un projet : membre de l'org ET (membre du projet OU rôle
  * org >= MANAGER). Renvoie le projet et le rôle projet effectif.
  */
-export async function requireProjectAccess(projectId: string) {
+export const requireProjectAccess = cache(async (projectId: string) => {
   const user = await requireUser();
   const project = await prisma.project.findUnique({
     where: { id: projectId },
@@ -120,7 +120,7 @@ export async function requireProjectAccess(projectId: string) {
     orgRole: orgMembership.role,
     projectRole: projectMembership?.role ?? (isOrgManager ? "LEAD" : "VIEWER"),
   };
-}
+});
 
 /** IP du client (best-effort, derrière proxy). */
 export async function getClientIp(): Promise<string> {
