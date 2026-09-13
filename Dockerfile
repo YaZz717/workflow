@@ -31,8 +31,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Le CLI Prisma + le schéma sont nécessaires pour `prisma migrate deploy` au démarrage.
+# On copie le paquet complet (pas le lien symbolique node_modules/.bin/prisma :
+# une fois isolé de son dossier d'origine, le lien casse et Prisma ne retrouve
+# plus ses fichiers internes) et on l'appelle par son vrai chemin.
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/prisma ./prisma
 
@@ -41,4 +43,4 @@ USER nextjs
 EXPOSE 3002
 ENV PORT=3002 HOSTNAME=0.0.0.0
 
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node server.js"]
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
