@@ -13,8 +13,11 @@ RUN npm ci
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# AUTH_SECRET factice pour satisfaire la validation d'env au build.
+# Valeurs factices pour satisfaire la validation d'env au build (src/env.ts).
+# Next.js importe les modules de route (dont l'API auth) pour les analyser :
+# aucune connexion réelle à la base n'est faite à ce stade.
 ENV AUTH_SECRET="build-time-placeholder-secret"
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public"
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate && npm run build
 
