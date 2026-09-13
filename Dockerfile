@@ -30,12 +30,11 @@ RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-# Le CLI Prisma + le schéma sont nécessaires pour `prisma migrate deploy` au démarrage.
-# On copie le paquet complet (pas le lien symbolique node_modules/.bin/prisma :
-# une fois isolé de son dossier d'origine, le lien casse et Prisma ne retrouve
-# plus ses fichiers internes) et on l'appelle par son vrai chemin.
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Le CLI Prisma (pour `migrate deploy` au démarrage) a un arbre de dépendances
+# profond et changeant (@prisma/config, effect, ...) : plutôt que de copier
+# ses paquets un par un (fragile, casse à chaque nouvelle dépendance), on
+# remplace le node_modules élagué du build "standalone" par l'arbre complet.
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
 RUN mkdir -p uploads && chown nextjs:nodejs uploads
