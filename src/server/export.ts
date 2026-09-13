@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { TASK_STATUS, PROJECT_STATUS, PRIORITY } from "@/lib/constants";
 import { toCsv } from "@/lib/csv";
+import { billableAmountCents } from "@/lib/money";
 
 /** Projets visibles par l'utilisateur dans l'organisation. */
 async function scopedProjectIds(organizationId: string, userId: string, isManager: boolean) {
@@ -28,6 +29,7 @@ export async function exportProjectsCsv(organizationId: string, userId: string, 
     return [
       p.key,
       p.name,
+      p.clientName ?? "",
       PROJECT_STATUS[p.status].label,
       PRIORITY[p.priority].label,
       p.lead?.name ?? "",
@@ -41,7 +43,7 @@ export async function exportProjectsCsv(organizationId: string, userId: string, 
   });
 
   return toCsv(
-    ["Clé", "Nom", "Statut", "Priorité", "Responsable", "Début", "Fin", "Membres", "Tâches", "Terminées", "Avancement"],
+    ["Clé", "Nom", "Client", "Statut", "Priorité", "Responsable", "Début", "Fin", "Membres", "Tâches", "Terminées", "Avancement"],
     rows,
   );
 }
@@ -100,19 +102,35 @@ export async function exportTimeCsv(
     orderBy: { startedAt: "desc" },
     include: {
       user: { select: { name: true } },
-      task: { select: { number: true, title: true, project: { select: { key: true } } } },
+      task: {
+        select: {
+          number: true,
+          title: true,
+          project: { select: { key: true, hourlyRateCents: true } },
+        },
+      },
     },
   });
 
-  const rows = entries.map((e) => [
-    e.startedAt.toISOString().slice(0, 10),
-    e.user.name ?? "",
-    `${e.task.project.key}-${e.task.number}`,
-    e.task.title,
-    (e.durationSec / 3600).toFixed(2),
-    e.source === "manual" ? "manuel" : "chrono",
-    e.description ?? "",
-  ]);
+  const rows = entries.map((e) => {
+    const rateCents = e.task.project.hourlyRateCents;
+    const amount = e.billable && rateCents ? billableAmountCents(e.durationSec, rateCents) / 100 : null;
+    return [
+      e.startedAt.toISOString().slice(0, 10),
+      e.user.name ?? "",
+      `${e.task.project.key}-${e.task.number}`,
+      e.task.title,
+      (e.durationSec / 3600).toFixed(2),
+      e.source === "manual" ? "manuel" : "chrono",
+      e.billable ? "Oui" : "Non",
+      rateCents ? (rateCents / 100).toFixed(2) : "",
+      amount != null ? amount.toFixed(2) : "",
+      e.description ?? "",
+    ];
+  });
 
-  return toCsv(["Date", "Personne", "Tâche", "Titre", "Heures", "Source", "Description"], rows);
+  return toCsv(
+    ["Date", "Personne", "Tâche", "Titre", "Heures", "Source", "Facturable", "Taux (€/h)", "Montant (€)", "Description"],
+    rows,
+  );
 }

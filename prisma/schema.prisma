@@ -264,6 +264,10 @@ model Subscription {
   status         SubscriptionStatus @default(TRIALING)
   seats          Int                @default(5)
   currentPeriodEnd DateTime?
+  /// Identifiants Stripe (mode test tant que STRIPE_SECRET_KEY est une clé sk_test_).
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String?
+  stripePriceId        String?
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
@@ -320,6 +324,10 @@ model Project {
   color          String        @default("#6366f1")
   status         ProjectStatus @default(PLANNING)
   priority       Priority      @default(MEDIUM)
+  /// Nom du client facturé pour ce projet (positionnement freelances/agences).
+  clientName      String?
+  /// Taux horaire facturable en centimes (EUR). Réservé aux organisations Pro.
+  hourlyRateCents Int?
   startDate      DateTime?
   endDate        DateTime?
   archivedAt     DateTime?
@@ -559,6 +567,8 @@ model TimeEntry {
   durationSec Int       @default(0)
   isRunning   Boolean   @default(false)
   source      String    @default("timer") // "timer" | "manual"
+  /// Faux pour exclure une entrée du montant facturable (ex. réunion interne).
+  billable    Boolean   @default(true)
   createdAt   DateTime  @default(now())
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)

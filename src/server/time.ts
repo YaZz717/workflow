@@ -13,6 +13,7 @@ import { Errors } from "@/lib/http";
 import { requireProjectAccess, requireTaskAccess } from "@/server/context";
 import { orgRoleAtLeast } from "@/lib/permissions";
 import { recordAudit } from "@/lib/audit";
+import { billableAmountCents } from "@/lib/money";
 
 export async function getRunningTimer(userId: string) {
   const entry = await prisma.timeEntry.findFirst({
@@ -72,7 +73,13 @@ type Actor = { id: string; name: string | null };
 
 export async function addManualEntry(
   actor: Actor,
-  input: { taskId: string; date: string; durationMinutes: number; description?: string },
+  input: {
+    taskId: string;
+    date: string;
+    durationMinutes: number;
+    description?: string;
+    billable?: boolean;
+  },
 ) {
   const { task, project, projectRole } = await requireTaskAccess(input.taskId);
   if (projectRole === "VIEWER") throw Errors.forbidden();
@@ -91,6 +98,7 @@ export async function addManualEntry(
       durationSec,
       isRunning: false,
       source: "manual",
+      billable: input.billable ?? true,
     },
   });
   await recordAudit({
@@ -116,7 +124,12 @@ async function loadEntryForWrite(actor: Actor, entryId: string) {
 export async function updateEntry(
   actor: Actor,
   entryId: string,
-  patch: { durationMinutes?: number; description?: string | null; date?: string },
+  patch: {
+    durationMinutes?: number;
+    description?: string | null;
+    date?: string;
+    billable?: boolean;
+  },
 ) {
   const entry = await loadEntryForWrite(actor, entryId);
   if (entry.isRunning) throw Errors.badRequest("Impossible de modifier un chrono en cours.");
@@ -131,6 +144,7 @@ export async function updateEntry(
       startedAt,
       endedAt: new Date(startedAt.getTime() + durationSec * 1000),
       durationSec,
+      billable: patch.billable === undefined ? undefined : patch.billable,
     },
   });
 }
@@ -299,6 +313,81 @@ export async function getTimeStats(
     byUser,
     byTask,
     daily: [...dailyMap.entries()].map(([date, sec]) => ({ date, hours: +(sec / 3600).toFixed(2) })),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Montant facturable (positionnement freelances/agences)
+// ---------------------------------------------------------------------------
+
+export async function getBillableStats(
+  organizationId: string,
+  filters: { projectId?: string; from?: string; to?: string } = {},
+) {
+  const rows = await prisma.timeEntry.findMany({
+    where: {
+      task: {
+        project: {
+          organizationId,
+          id: filters.projectId || undefined,
+        },
+      },
+      isRunning: false,
+      ...(filters.from || filters.to
+        ? {
+            startedAt: {
+              ...(filters.from ? { gte: startOfDay(new Date(filters.from)) } : {}),
+              ...(filters.to ? { lte: endOfDay(new Date(filters.to)) } : {}),
+            },
+          }
+        : {}),
+    },
+    select: {
+      durationSec: true,
+      billable: true,
+      task: {
+        select: {
+          project: { select: { id: true, name: true, hourlyRateCents: true } },
+        },
+      },
+    },
+  });
+
+  const byProjectMap = new Map<
+    string,
+    { projectId: string; name: string; billableSec: number; nonBillableSec: number; amountCents: number }
+  >();
+  let billableSec = 0;
+  let nonBillableSec = 0;
+  let amountCents = 0;
+
+  for (const r of rows) {
+    const p = r.task.project;
+    const entry =
+      byProjectMap.get(p.id) ??
+      { projectId: p.id, name: p.name, billableSec: 0, nonBillableSec: 0, amountCents: 0 };
+
+    if (r.billable) {
+      billableSec += r.durationSec;
+      entry.billableSec += r.durationSec;
+      if (p.hourlyRateCents) {
+        const cents = billableAmountCents(r.durationSec, p.hourlyRateCents);
+        amountCents += cents;
+        entry.amountCents += cents;
+      }
+    } else {
+      nonBillableSec += r.durationSec;
+      entry.nonBillableSec += r.durationSec;
+    }
+    byProjectMap.set(p.id, entry);
+  }
+
+  return {
+    billableSec,
+    nonBillableSec,
+    amountCents,
+    currency: "EUR" as const,
+    byProject: [...byProjectMap.values()].sort((a, b) => b.amountCents - a.amountCents),
   };
 }
 

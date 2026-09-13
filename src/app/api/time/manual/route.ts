@@ -14,6 +14,7 @@ export const POST = handleRoute(async (req: Request) => {
       date: input.date,
       durationMinutes: input.durationMinutes,
       description: input.description || undefined,
+      billable: input.billable,
     },
   );
   return created({ entry });

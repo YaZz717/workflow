@@ -65,6 +65,7 @@ export async function listProjects(
       key: p.key,
       name: p.name,
       description: p.description,
+      clientName: p.clientName,
       color: p.color,
       status: p.status,
       priority: p.priority,

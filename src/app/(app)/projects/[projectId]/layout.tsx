@@ -43,6 +43,9 @@ export default async function ProjectLayout({
           </span>
           <ProjectStatusBadge status={project.status} />
           <PriorityBadge priority={project.priority} />
+          {project.clientName ? (
+            <span className="text-sm text-muted-foreground">Client : {project.clientName}</span>
+          ) : null}
         </div>
         {project.description ? (
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{project.description}</p>

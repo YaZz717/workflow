@@ -2,9 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { getActiveOrganization } from "@/server/organizations";
 import { requireOrgMember } from "@/server/context";
 import { can } from "@/lib/permissions";
+import { env } from "@/env";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExportMenu } from "@/components/shared/export-menu";
+import { BillingActions } from "@/components/settings/billing-actions";
 import { ORG_ROLE_LABEL } from "@/lib/constants";
 
 export default async function OrganizationSettingsPage() {
@@ -46,10 +48,13 @@ export default async function OrganizationSettingsPage() {
         <CardHeader>
           <CardTitle>Abonnement</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
+        <CardContent className="space-y-3 text-sm">
           <div className="flex items-center gap-2">
             <Badge>{org.subscription?.plan ?? "FREE"}</Badge>
             <Badge variant="success">{org.subscription?.status ?? "TRIALING"}</Badge>
+            {env.STRIPE_SECRET_KEY.startsWith("sk_test_") ? (
+              <Badge variant="outline">Mode test</Badge>
+            ) : null}
           </div>
           <Row label="Sièges" value={String(org.subscription?.seats ?? 0)} />
           <Row
@@ -60,7 +65,13 @@ export default async function OrganizationSettingsPage() {
                 : "—"
             }
           />
-          <p className="pt-2 text-xs text-muted-foreground">Abonnement fictif — aucune facturation réelle.</p>
+          {can(ctx.role, "org.billing") ? (
+            <BillingActions
+              plan={org.subscription?.plan ?? "FREE"}
+              hasStripeCustomer={Boolean(org.subscription?.stripeCustomerId)}
+              billingConfigured={Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ID_PRO)}
+            />
+          ) : null}
         </CardContent>
       </Card>
 

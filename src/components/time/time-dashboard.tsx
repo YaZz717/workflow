@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Clock, CalendarDays, CalendarRange } from "lucide-react";
+import { Clock, CalendarDays, CalendarRange, Euro } from "lucide-react";
 
 import { cn, formatDuration } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,16 @@ export function TimeDashboard({
     queryKey: ["time", "stats", range, scope],
     queryFn: async (): Promise<Stats> => {
       const res = await fetch(`/api/time/stats?range=${range}&scope=${scope}`);
+      return (await res.json()).data;
+    },
+  });
+
+  const billable = useQuery({
+    queryKey: ["time", "billable", projectId],
+    enabled: isManager,
+    queryFn: async (): Promise<{ amountCents: number }> => {
+      const qs = projectId ? `?projectId=${projectId}` : "";
+      const res = await fetch(`/api/time/billable${qs}`);
       return (await res.json()).data;
     },
   });
@@ -124,7 +134,7 @@ export function TimeDashboard({
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={cn("grid gap-3 sm:grid-cols-2", isManager ? "lg:grid-cols-5" : "lg:grid-cols-4")}>
         <StatCard label="Aujourd'hui" value={formatDuration(s?.totals.todaySec ?? 0)} icon={Clock} />
         <StatCard label="Cette semaine" value={formatDuration(s?.totals.weekSec ?? 0)} icon={CalendarDays} />
         <StatCard label="Ce mois" value={formatDuration(s?.totals.monthSec ?? 0)} icon={CalendarRange} />
@@ -134,6 +144,14 @@ export function TimeDashboard({
           icon={Clock}
           accent="success"
         />
+        {isManager ? (
+          <StatCard
+            label="Montant facturable"
+            value={`${((billable.data?.amountCents ?? 0) / 100).toFixed(2)} €`}
+            icon={Euro}
+            accent="success"
+          />
+        ) : null}
       </div>
 
       <Card>

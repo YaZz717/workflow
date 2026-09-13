@@ -18,6 +18,13 @@ const schema = z.object({
   LOGIN_MAX_ATTEMPTS: z.coerce.number().int().positive().default(5),
   LOGIN_WINDOW_MINUTES: z.coerce.number().int().positive().default(15),
   CRON_SECRET: z.string().optional().default(""),
+  // Stripe : clés en mode TEST tant que le fondateur n'a pas de statut légal
+  // pour facturer réellement. Passer en production = remplacer ces valeurs
+  // par des clés live, sans aucun changement de code.
+  STRIPE_SECRET_KEY: z.string().optional().default(""),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(""),
+  STRIPE_PRICE_ID_PRO: z.string().optional().default(""),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional().default(""),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

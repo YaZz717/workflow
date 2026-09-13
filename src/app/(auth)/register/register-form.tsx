@@ -37,7 +37,7 @@ export function RegisterForm() {
         label="Nom de votre organisation"
         htmlFor="organizationName"
         error={errors?.organizationName?.[0]}
-        hint="Vous pourrez inviter votre équipe ensuite."
+        hint="Vous pourrez inviter votre équipe et ajouter vos clients ensuite."
         required
       >
         <Input id="organizationName" name="organizationName" placeholder="Studio Nova" required />

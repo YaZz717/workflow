@@ -7,8 +7,10 @@ import { listOrgMembersForPicker } from "@/app/(app)/projects/actions";
 import { orgRoleAtLeast, projectRoleAtLeast } from "@/lib/permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
+import { ProjectRateForm } from "@/components/projects/project-rate-form";
 import { DeleteProjectButton } from "@/components/projects/delete-project-button";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 import type { PageParams } from "@/types/page";
 
 export default async function ProjectSettingsPage({
@@ -29,6 +31,11 @@ export default async function ProjectSettingsPage({
   const canDelete = orgRoleAtLeast(access.orgRole, "MANAGER");
   const { project } = access;
   const members = canManage ? await listOrgMembersForPicker() : [];
+  const subscription = await prisma.subscription.findUnique({
+    where: { organizationId: project.organizationId },
+    select: { plan: true },
+  });
+  const isFreePlan = (subscription?.plan ?? "FREE") === "FREE";
 
   if (!canManage) {
     return (
@@ -54,6 +61,7 @@ export default async function ProjectSettingsPage({
             defaults={{
               name: project.name,
               description: project.description,
+              clientName: project.clientName,
               color: project.color,
               priority: project.priority,
               status: project.status,
@@ -65,10 +73,24 @@ export default async function ProjectSettingsPage({
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <Row label="Nom" value={project.name} />
+          <Row label="Client" value={project.clientName ?? "—"} />
           <Row label="Clé" value={project.key} />
           <Row label="Statut" value={project.status} />
           <Row label="Priorité" value={project.priority} />
           <Row label="Description" value={project.description ?? "—"} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Facturation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ProjectRateForm
+            projectId={projectId}
+            currentRateCents={project.hourlyRateCents}
+            locked={isFreePlan}
+          />
         </CardContent>
       </Card>
 

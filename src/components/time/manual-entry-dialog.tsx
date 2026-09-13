@@ -43,6 +43,7 @@ export function ManualEntryDialog({
   const [hours, setHours] = React.useState("1");
   const [minutes, setMinutes] = React.useState("0");
   const [description, setDescription] = React.useState("");
+  const [billable, setBillable] = React.useState(true);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,7 +58,13 @@ export function ManualEntryDialog({
       const res = await fetch("/api/time/manual", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskId: selectedTask, date, durationMinutes: totalMin, description }),
+        body: JSON.stringify({
+          taskId: selectedTask,
+          date,
+          durationMinutes: totalMin,
+          description,
+          billable,
+        }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => null);
@@ -128,6 +135,11 @@ export function ManualEntryDialog({
           <Field label="Description (optionnel)">
             <Input value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} />
           </Field>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={billable} onChange={(e) => setBillable(e.target.checked)} />
+            Temps facturable au client
+          </label>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={pending}>

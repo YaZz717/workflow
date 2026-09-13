@@ -29,6 +29,7 @@ export const createProjectSchema = z
       .regex(/^[A-Z][A-Z0-9]{1,5}$/, "2 à 6 lettres majuscules/chiffres, commençant par une lettre")
       .optional(),
     description: z.string().max(2000).optional().or(z.literal("")),
+    clientName: z.string().max(120).optional().or(z.literal("")),
     color: hexColor,
     priority: z.enum(PRIORITIES).default("MEDIUM"),
     status: z.enum(PROJECT_STATUSES).default("PLANNING"),
@@ -46,6 +47,8 @@ export const updateProjectSchema = z
   .object({
     name: z.string().min(2).max(120).optional(),
     description: z.string().max(2000).nullable().optional(),
+    clientName: z.string().max(120).nullable().optional(),
+    hourlyRateCents: z.coerce.number().int().min(0).max(100_000_00).nullable().optional(),
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     priority: z.enum(PRIORITIES).optional(),
     status: z.enum(PROJECT_STATUSES).optional(),

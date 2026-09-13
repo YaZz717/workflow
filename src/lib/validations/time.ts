@@ -5,12 +5,14 @@ export const manualEntrySchema = z.object({
   date: z.string().min(1), // "YYYY-MM-DD"
   durationMinutes: z.coerce.number().int().min(1).max(24 * 60),
   description: z.string().max(500).optional().or(z.literal("")),
+  billable: z.boolean().optional(),
 });
 
 export const updateEntrySchema = z.object({
   durationMinutes: z.coerce.number().int().min(1).max(24 * 60).optional(),
   description: z.string().max(500).nullable().optional(),
   date: z.string().min(1).optional(),
+  billable: z.boolean().optional(),
 });
 
 export const timeEntriesQuerySchema = z.object({

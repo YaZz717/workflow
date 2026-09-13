@@ -6,6 +6,7 @@ import { fr } from "date-fns/locale";
 
 import { ApiError } from "@/lib/http";
 import { getProjectOverview } from "@/server/projects";
+import { getBillableStats } from "@/server/time";
 import { TASK_STATUS, TASK_STATUS_ORDER } from "@/lib/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -26,6 +27,9 @@ export default async function ProjectOverviewPage({ params }: PageParams<{ proje
   }
 
   const { project, stats, recentActivity, upcoming } = data;
+  const billable = project.hourlyRateCents
+    ? await getBillableStats(project.organizationId, { projectId })
+    : null;
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
@@ -33,13 +37,30 @@ export default async function ProjectOverviewPage({ params }: PageParams<{ proje
         <div className="grid gap-3 sm:grid-cols-3">
           <MiniStat icon={ListTodo} label="Tâches" value={stats.taskCount} />
           <MiniStat icon={CheckCircle2} label="Terminées" value={stats.doneCount} accent="text-success" />
-          <MiniStat
-            icon={AlertTriangle}
-            label="En retard"
-            value={stats.overdue}
-            accent={stats.overdue > 0 ? "text-warning" : undefined}
-          />
+          {billable ? (
+            <MiniStat
+              icon={AlertTriangle}
+              label="Montant facturable"
+              value={`${(billable.amountCents / 100).toFixed(2)} €`}
+              accent="text-primary"
+            />
+          ) : (
+            <MiniStat
+              icon={AlertTriangle}
+              label="En retard"
+              value={stats.overdue}
+              accent={stats.overdue > 0 ? "text-warning" : undefined}
+            />
+          )}
         </div>
+        {!billable ? (
+          <Link
+            href={`/projects/${projectId}/settings`}
+            className="block text-xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Définissez un taux horaire dans les paramètres du projet pour suivre le montant facturable →
+          </Link>
+        ) : null}
 
         <Card>
           <CardHeader>
@@ -94,6 +115,7 @@ export default async function ProjectOverviewPage({ params }: PageParams<{ proje
             <CardTitle>Détails</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
+            <Detail label="Client">{project.clientName ?? "—"}</Detail>
             <Detail label="Responsable">
               {project.lead ? (
                 <span className="inline-flex items-center gap-2">
@@ -163,7 +185,7 @@ function MiniStat({
 }: {
   icon: typeof CheckCircle2;
   label: string;
-  value: number;
+  value: number | string;
   accent?: string;
 }) {
   return (

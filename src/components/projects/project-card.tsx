@@ -13,6 +13,7 @@ type Project = {
   key: string;
   name: string;
   description: string | null;
+  clientName: string | null;
   color: string;
   status: "PLANNING" | "ACTIVE" | "ON_HOLD" | "COMPLETED" | "ARCHIVED";
   priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
@@ -42,6 +43,9 @@ export function ProjectCard({ project }: { project: Project }) {
               <PriorityBadge priority={project.priority} />
             </div>
             <h3 className="mt-1 truncate font-semibold">{project.name}</h3>
+            {project.clientName ? (
+              <p className="truncate text-xs text-muted-foreground">Client : {project.clientName}</p>
+            ) : null}
           </div>
           <ProjectStatusBadge status={project.status} />
         </div>

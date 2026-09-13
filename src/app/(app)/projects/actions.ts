@@ -81,6 +81,7 @@ export async function createProjectAction(
       key,
       name: data.name,
       description: data.description || null,
+      clientName: data.clientName || null,
       color: data.color,
       priority: data.priority,
       status: data.status,
@@ -138,10 +139,24 @@ export async function updateProjectAction(
   const parsed = parseOrFail(updateProjectSchema, {
     ...Object.fromEntries(formData),
     description: formData.get("description") ?? undefined,
+    clientName: formData.get("clientName") ?? undefined,
+    hourlyRateCents: formData.get("hourlyRateCents") || undefined,
     leadId: formData.get("leadId") || null,
   });
   if (!parsed.success) return parsed.result;
   const data = parsed.data;
+
+  let hourlyRateCents: number | null | undefined = undefined;
+  if (data.hourlyRateCents !== undefined) {
+    const subscription = await prisma.subscription.findUnique({
+      where: { organizationId: project.organizationId },
+      select: { plan: true },
+    });
+    if (subscription?.plan === "FREE") {
+      return actionError("Le taux horaire facturable est réservé aux organisations Pro.");
+    }
+    hourlyRateCents = data.hourlyRateCents;
+  }
 
   if (data.leadId) {
     const isMember = await prisma.projectMember.findUnique({
@@ -159,6 +174,8 @@ export async function updateProjectAction(
     data: {
       name: data.name,
       description: data.description,
+      clientName: data.clientName,
+      hourlyRateCents,
       color: data.color,
       priority: data.priority,
       status: data.status,

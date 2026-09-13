@@ -12,19 +12,20 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { DemoCredentials } from "@/components/shared/demo-credentials";
 import { getCurrentUser } from "@/server/context";
 
 export const dynamic = "force-dynamic";
 
 const features = [
   { icon: CheckSquare, title: "Tâches & Kanban", desc: "Backlog, sous-tâches, drag & drop, filtres et vues personnalisées." },
-  { icon: Clock, title: "Suivi du temps", desc: "Chronomètre par tâche, historique et statistiques par projet." },
+  { icon: Clock, title: "Temps facturable", desc: "Chronomètre par tâche, taux horaire par client et montant facturable calculé automatiquement." },
   { icon: Calendar, title: "Calendrier", desc: "Deadlines, réunions et événements dans une vue unifiée." },
-  { icon: FileText, title: "Documents", desc: "Base de connaissances par projet, dossiers et pièces jointes." },
+  { icon: FileText, title: "Documents", desc: "Base de connaissances par client, dossiers et pièces jointes." },
   { icon: Bell, title: "Notifications", desc: "Assignations, mentions @, échéances et commentaires en temps réel." },
   { icon: Users, title: "Rôles & permissions", desc: "Owner, Admin, Manager, Member, Guest — appliqués côté serveur." },
   { icon: BarChart3, title: "Tableaux de bord", desc: "Indicateurs, activité récente et graphiques par organisation." },
-  { icon: LayoutGrid, title: "Multi-organisations", desc: "Une seule connexion, plusieurs espaces de travail étanches." },
+  { icon: LayoutGrid, title: "Un espace par client", desc: "Chaque projet rattaché à un client, sans mélanger les dossiers." },
 ];
 
 export default async function LandingPage() {
@@ -64,15 +65,16 @@ export default async function LandingPage() {
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-6 py-20 text-center sm:py-28">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
-            Nouveau · Suivi du temps intégré
+            Pensé pour les freelances et petites agences
           </p>
           <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
-            La plateforme où votre équipe gère{" "}
-            <span className="text-primary">projets, tâches et temps</span>
+            Gérez vos clients, vos projets et{" "}
+            <span className="text-primary">facturez votre temps</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            WorkFlow réunit la gestion de projets, le Kanban, le suivi du temps, les documents
-            et le calendrier dans un seul outil clair et rapide.
+            WorkFlow réunit un espace par client, le Kanban, un taux horaire par projet et un
+            suivi du temps facturable — pour arrêter de jongler entre Trello, un tableur et un
+            outil de facturation.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -84,10 +86,7 @@ export default async function LandingPage() {
               <Link href="/login">J&apos;ai déjà un compte</Link>
             </Button>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Compte de démo : <code className="rounded bg-muted px-1">camille@studionova.fr</code> /{" "}
-            <code className="rounded bg-muted px-1">Password123</code>
-          </p>
+          <DemoCredentials />
         </section>
 
         <section className="border-t bg-secondary/40">
@@ -104,7 +103,10 @@ export default async function LandingPage() {
       </main>
 
       <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        WorkFlow — projet de démonstration full-stack (Next.js, Prisma, PostgreSQL).
+        © {new Date().getFullYear()} WorkFlow.{" "}
+        <Link href="/register" className="underline underline-offset-2 hover:text-foreground">
+          Créer un compte
+        </Link>
       </footer>
     </div>
   );

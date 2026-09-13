@@ -27,6 +27,7 @@ type Defaults = {
   name?: string;
   key?: string;
   description?: string | null;
+  clientName?: string | null;
   color?: string;
   priority?: keyof typeof PRIORITY;
   status?: keyof typeof PROJECT_STATUS;
@@ -107,6 +108,20 @@ export function ProjectFormDialog({
 
           <Field label="Nom" htmlFor="name" error={fieldErrors.name?.[0]} required>
             <Input id="name" name="name" defaultValue={defaults?.name} required />
+          </Field>
+
+          <Field
+            label="Client"
+            htmlFor="clientName"
+            hint="Le client ou la marque pour qui ce projet est réalisé."
+            error={fieldErrors.clientName?.[0]}
+          >
+            <Input
+              id="clientName"
+              name="clientName"
+              placeholder="Nom du client / de la marque"
+              defaultValue={defaults?.clientName ?? ""}
+            />
           </Field>
 
           {mode === "create" ? (

@@ -27,7 +27,7 @@ export function CreateOrgForm() {
     <form action={formAction} className="space-y-4">
       {state && !state.ok ? <FormError message={state.error} /> : null}
       <Field label="Nom de l'organisation" htmlFor="name" error={errors?.name?.[0]} required>
-        <Input id="name" name="name" placeholder="Mon équipe" required />
+        <Input id="name" name="name" placeholder="Studio Nova" required />
       </Field>
       <Field label="Description" htmlFor="description" error={errors?.description?.[0]}>
         <Textarea id="description" name="description" rows={3} />
