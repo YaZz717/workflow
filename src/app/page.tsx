@@ -13,7 +13,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { DemoCredentials } from "@/components/shared/demo-credentials";
-import { getCurrentUser } from "@/server/context";
+import { SiteHeader } from "@/components/marketing/site-header";
+import { SiteFooter } from "@/components/marketing/site-footer";
 
 export const dynamic = "force-dynamic";
 
@@ -29,38 +30,9 @@ const features = [
 ];
 
 export default async function LandingPage() {
-  const user = await getCurrentUser();
-
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <span className="inline-flex items-center gap-2 font-semibold">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <LayoutGrid className="size-4" />
-            </span>
-            WorkFlow
-          </span>
-          <nav className="flex items-center gap-2">
-            {user ? (
-              <Button asChild>
-                <Link href="/dashboard">
-                  Ouvrir l&apos;application <ArrowRight />
-                </Link>
-              </Button>
-            ) : (
-              <>
-                <Button asChild variant="ghost">
-                  <Link href="/login">Connexion</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">Commencer gratuitement</Link>
-                </Button>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-6 py-20 text-center sm:py-28">
@@ -102,12 +74,7 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} WorkFlow.{" "}
-        <Link href="/register" className="underline underline-offset-2 hover:text-foreground">
-          Créer un compte
-        </Link>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

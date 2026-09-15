@@ -29,6 +29,9 @@ export const authConfig = {
         pathname.startsWith("/reset-password") ||
         pathname.startsWith("/verify-email") ||
         pathname.startsWith("/invite") ||
+        pathname.startsWith("/tarifs") ||
+        pathname.startsWith("/cgu") ||
+        pathname.startsWith("/confidentialite") ||
         pathname.startsWith("/api/cron/") || // authentifié par Bearer token
         pathname.startsWith("/api/webhooks/"); // authentifié par signature Stripe
 
