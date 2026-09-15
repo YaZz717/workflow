@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { SiteFooter } from "@/components/marketing/site-footer";
 
-export const metadata: Metadata = { title: "Politique de confidentialité · WorkFlow" };
+export const metadata: Metadata = { title: "Politique de confidentialité" };
 
 export default function PrivacyPage() {
   return (

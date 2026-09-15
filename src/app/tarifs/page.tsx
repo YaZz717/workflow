@@ -10,7 +10,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { getCurrentUser } from "@/server/context";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Tarifs · WorkFlow" };
+export const metadata: Metadata = { title: "Tarifs" };
 
 const FREE_FEATURES = [
   "Projets, tâches et Kanban illimités",
